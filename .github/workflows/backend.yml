@@ -23,7 +23,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  IMAGEN: ghcr.io/arcgabicho/compipro-crm-api
+  IMAGEN: ghcr.io/arcgabito/compipro-crm-api
   GRUPO: rg-compipro
   APP: compipro-api
 
