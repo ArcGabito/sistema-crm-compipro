@@ -1,6 +1,6 @@
 # Sistema CRM de COMPIPRO S.A.C.
 
-![Portada](https://i.imgur.com/bZSlW0t.png)
+![Portada](core/client/public/images/wallpaper.png)
 
 Este repositorio contiene el ecosistema de servicios y aplicaciones de Compipro. Aquí se agrupan microservicios, aplicaciones web, paquetes compartidos y utilidades para la gestión integral de la plataforma.
 
@@ -11,7 +11,3 @@ Este repositorio contiene el ecosistema de servicios y aplicaciones de Compipro.
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ArcGabito/sistema-crm-compipro/master/scripts/setup.sh | bash
 ```
-
-----
-
-Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE.md](LICENSE.md) para más detalles.
