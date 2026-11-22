@@ -23,6 +23,10 @@ services:
       Seed__Admin__Email: "${SEED_ADMIN_EMAIL:-admin@compipro.net}"
       Seed__Admin__Name: "${SEED_ADMIN_NAME:-Administrador}"
       Seed__Admin__Password: "${SEED_ADMIN_PASSWORD:-Compipro2025!}"
+      # Cuenta de la demo pública (rol limitado). Vacía = sin cuenta demo.
+      Seed__Demo__Email: "${SEED_DEMO_EMAIL-demo@compipro.net}"
+      Seed__Demo__Password: "${SEED_DEMO_PASSWORD-Demo2026!}"
+      Seed__Demo__Role: "${SEED_DEMO_ROLE:-operaciones}"
       # Secreto compartido con el BFF para conocer la IP real del visitante (límites).
       Limites__ClaveBff: "${BFF_CLAVE:-}"
       # Correo: por defecto al Mailpit de abajo (bandeja en http://localhost:8025;
@@ -59,6 +63,9 @@ services:
       dockerfile: docker/Dockerfile.client
       args:
         SITE_URL: "${SITE_URL:-https://compipro.net}"
+        # Credenciales que el login muestra como demo (la página se genera en el build).
+        DEMO_LOGIN_EMAIL: "${SEED_DEMO_EMAIL-demo@compipro.net}"
+        DEMO_LOGIN_PASSWORD: "${SEED_DEMO_PASSWORD-Demo2026!}"
     depends_on:
       server:
         condition: service_started

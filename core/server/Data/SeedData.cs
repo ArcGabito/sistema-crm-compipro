@@ -1,41 +1,17 @@
-using Server.Config;
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
-using Server.Services;
 
 namespace Server.Data;
 
-/// <summary>Datos de ejemplo para que los módulos y el dashboard tengan contenido.</summary>
+/// <summary>
+/// Datos de ejemplo para que los módulos y el dashboard tengan contenido. No crea
+/// usuarios: en la base solo están el admin y la cuenta demo (ver <see cref="DbInitializer"/>).
+/// </summary>
 public static class SeedData
 {
     public static async Task SeedAsync(AppDbContext db, CancellationToken ct = default)
     {
         var rnd = new Random(20260903);
-
-        // --- Personal interno (para asignaciones y control de asistencia) ---
-        if (await db.Users.CountAsync(ct) <= 1)
-        {
-            (string name, string email, string role, int h, int m)[] staff =
-            [
-                ("Ana Quispe", "ana.quispe@compipro.net", Roles.Ventas, 9, 0),
-                ("Luis Torres", "luis.torres@compipro.net", Roles.Operaciones, 9, 0),
-                ("Marta Ríos", "marta.rios@compipro.net", Roles.Ventas, 8, 30),
-                ("Diego Flores", "diego.flores@compipro.net", Roles.Gerencia, 9, 0),
-            ];
-            foreach (var s in staff)
-            {
-                if (await db.Users.AnyAsync(u => u.Email == s.email, ct)) continue;
-                db.Users.Add(new User
-                {
-                    Name = s.name,
-                    Email = s.email,
-                    Role = s.role,
-                    HoraEntrada = new TimeOnly(s.h, s.m),
-                    PasswordHash = PasswordHasher.Hash("Compipro2025!"),
-                });
-            }
-            await db.SaveChangesAsync(ct);
-        }
 
         // --- Asistencia (últimos días hábiles) --------------------------
         if (!await db.RegistrosAsistencia.AnyAsync(ct))

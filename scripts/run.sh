@@ -47,6 +47,11 @@ if [ ! -f "$ROOT/core/server/obj/project.assets.json" ]; then
   fi
 fi
 
+# Cuenta de la demo pública: mismos valores por defecto que docker-compose.yml.
+SEED_DEMO_EMAIL="${SEED_DEMO_EMAIL-demo@compipro.net}"
+SEED_DEMO_PASSWORD="${SEED_DEMO_PASSWORD-Demo2026!}"
+SEED_DEMO_ROLE="${SEED_DEMO_ROLE:-operaciones}"
+
 # --- Deriva los .env locales desde el .env de la raíz ------------------------
 je() { printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'; }
 
@@ -55,6 +60,8 @@ cat > "$ROOT/core/client/.env.local" <<EOF
 BACKEND_URL=http://localhost:5008
 AUTH_JWT_SECRET=${JWT_KEY}
 BFF_CLAVE=${BFF_CLAVE:-}
+DEMO_LOGIN_EMAIL=${SEED_DEMO_EMAIL}
+DEMO_LOGIN_PASSWORD=${SEED_DEMO_PASSWORD}
 EOF
 
 cat > "$ROOT/core/server/appsettings.Development.json" <<EOF
@@ -62,7 +69,10 @@ cat > "$ROOT/core/server/appsettings.Development.json" <<EOF
   "ConnectionStrings": { "Default": "$(je "$DB_CONNECTION_STRING")" },
   "Jwt": { "Key": "$(je "$JWT_KEY")" },
   "Limites": { "ClaveBff": "$(je "${BFF_CLAVE:-}")" },
-  "Seed": { "Admin": { "Email": "$(je "$SEED_ADMIN_EMAIL")", "Name": "$(je "$SEED_ADMIN_NAME")", "Password": "$(je "$SEED_ADMIN_PASSWORD")" } }
+  "Seed": {
+    "Admin": { "Email": "$(je "$SEED_ADMIN_EMAIL")", "Name": "$(je "$SEED_ADMIN_NAME")", "Password": "$(je "$SEED_ADMIN_PASSWORD")" },
+    "Demo": { "Email": "$(je "$SEED_DEMO_EMAIL")", "Password": "$(je "$SEED_DEMO_PASSWORD")", "Role": "$(je "$SEED_DEMO_ROLE")" }
+  }
 }
 EOF
 echo "==> Generados core/client/.env.local y core/server/appsettings.Development.json"
@@ -90,4 +100,7 @@ if command -v curl >/dev/null 2>&1; then
 fi
 
 echo "==> Cliente:  http://localhost:3000     Backend: http://localhost:5008"
-echo "==> Admin de demo: ${SEED_ADMIN_EMAIL} / (SEED_ADMIN_PASSWORD del .env)"
+echo "==> Admin: ${SEED_ADMIN_EMAIL} / (SEED_ADMIN_PASSWORD del .env)"
+if [ -n "$SEED_DEMO_EMAIL" ]; then
+  echo "==> Cuenta demo (${SEED_DEMO_ROLE}): ${SEED_DEMO_EMAIL} / ${SEED_DEMO_PASSWORD}"
+fi

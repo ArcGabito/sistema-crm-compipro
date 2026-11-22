@@ -13,6 +13,10 @@ COPY core/client/ ./
 # URL pública del sitio (canónicas, sitemap, vistas previas). Se fija en el build.
 ARG SITE_URL=https://compipro.net
 ENV SITE_URL=$SITE_URL
+# Credenciales de la demo que muestra el login (vacías = no se muestran). Solo se leen
+# durante el build, al generar la página estática /auth.
+ARG DEMO_LOGIN_EMAIL=""
+ARG DEMO_LOGIN_PASSWORD=""
 RUN npm run build
 
 ENV NODE_ENV=production \
