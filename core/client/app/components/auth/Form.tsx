@@ -21,12 +21,11 @@ export default function Form({ demo }: { demo?: { email: string; password: strin
     void despertarServidor();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const entrar = async (correo: string, clave: string) => {
     setIsLoading(true);
     try {
       const session = await mientrasDespierta(
-        () => login(email, password),
+        () => login(correo, clave),
         (error) => error instanceof ServidorNoDisponible,
       );
       sileo.success({ title: `Bienvenido, ${session.name || session.email}` });
@@ -46,6 +45,19 @@ export default function Form({ demo }: { demo?: { email: string; password: strin
       }
       setIsLoading(false);
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    void entrar(email, password);
+  };
+
+  // Un clic: completa los campos con la cuenta demo y entra.
+  const entrarDemo = () => {
+    if (!demo) return;
+    setEmail(demo.email);
+    setPassword(demo.password);
+    void entrar(demo.email, demo.password);
   };
 
   return (
@@ -72,7 +84,7 @@ export default function Form({ demo }: { demo?: { email: string; password: strin
       </span>
       {demo && (
         <p className="rounded-2xl bg-accent/15 px-4 py-3 text-sm text-neutral-700 ring-1 ring-accent/30 [@media(max-height:620px)]:py-2">
-          <span className="font-semibold text-ink">Demo:</span> usa las credenciales que aparecen en los campos.
+          <span className="font-semibold text-ink">Demo:</span> usa el botón «Entrar a la demo» o las credenciales que aparecen en los campos.
         </p>
       )}
       <div className="flex flex-col gap-1">
@@ -111,6 +123,16 @@ export default function Form({ demo }: { demo?: { email: string; password: strin
         {isLoading && <LoaderCircle className="mr-2 size-4 animate-spin" />}
         Ingresar
       </button>
+      {demo && (
+        <button
+          type="button"
+          onClick={entrarDemo}
+          disabled={isLoading}
+          className="-mt-3 rounded-full bg-white py-3 text-sm font-semibold text-ink shadow-sm ring-1 ring-neutral-200 transition-colors hover:bg-neutral-50 disabled:opacity-60 [@media(max-height:620px)]:mt-0 [@media(max-height:620px)]:py-2"
+        >
+          Entrar a la demo
+        </button>
+      )}
     </form>
   );
 }
