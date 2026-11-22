@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Server.Config;
 using Server.Data;
 using Server.Domain;
 using Server.Models;
@@ -17,7 +19,8 @@ public interface IAuthService
 }
 
 public sealed class AuthService(
-    AppDbContext db, ITokenService tokens, IAuditService audit, BloqueoLogin bloqueo) : IAuthService
+    AppDbContext db, ITokenService tokens, IAuditService audit, BloqueoLogin bloqueo,
+    IOptions<SeedOptions> seed) : IAuthService
 {
     public const int LongitudMinima = 8;
 
@@ -27,14 +30,17 @@ public sealed class AuthService(
             return new(null);
 
         string email = request.Email.Trim();
+        // La contraseña de la demo es pública: bloquearla solo dejaría a un visitante dejar
+        // fuera a los demás. Los límites por IP la siguen cubriendo.
+        bool esDemo = seed.Value.Demo.Es(email);
         // Bloqueada: ni siquiera se comprueba la contraseña (aunque sea la correcta).
-        if (bloqueo.Restante(email) is { } resta) return new(null, resta);
+        if (!esDemo && bloqueo.Restante(email) is { } resta) return new(null, resta);
 
         var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email, ct);
         if (user is null || !user.Activo || !PasswordHasher.Verify(request.Password, user.PasswordHash))
         {
             // También cuenta para emails inexistentes: no revela qué cuentas existen.
-            if (bloqueo.RegistrarFallo(email) is { } duracion)
+            if (!esDemo && bloqueo.RegistrarFallo(email) is { } duracion)
             {
                 await audit.LogAsync(email, "BloqueoLogin", nameof(User), user?.Id, "Demasiados intentos fallidos", ct);
                 return new(null, duracion);
@@ -61,6 +67,9 @@ public sealed class AuthService(
 
         var user = await db.Users.FirstOrDefaultAsync(u => u.Id == userId && u.Activo, ct);
         if (user is null) return "Tu usuario ya no está activo.";
+        // Sus credenciales se publican en el login: cambiarlas dejaría fuera a los demás visitantes.
+        if (seed.Value.Demo.Es(user.Email))
+            return "La cuenta de demostración no puede cambiar su contraseña.";
         if (!PasswordHasher.Verify(request.Actual, user.PasswordHash))
             return "La contraseña actual no es correcta.";
 

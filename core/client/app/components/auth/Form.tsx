@@ -9,7 +9,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { ServidorNoDisponible } from "../../lib/auth";
 import { despertarServidor, mientrasDespierta } from "../../lib/despertar";
 
-export default function Form() {
+export default function Form({ demo }: { demo?: { email: string; password: string } }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -70,6 +70,11 @@ export default function Form() {
       <span className="text-center text-neutral-500 text-sm [@media(max-height:620px)]:hidden">
         Ingrese sus credenciales para acceder al sistema CRM de Compipro S.A.C.
       </span>
+      {demo && (
+        <p className="rounded-2xl bg-accent/15 px-4 py-3 text-sm text-neutral-700 ring-1 ring-accent/30 [@media(max-height:620px)]:py-2">
+          <span className="font-semibold text-ink">Demo:</span> usa las credenciales que aparecen en los campos.
+        </p>
+      )}
       <div className="flex flex-col gap-1">
         <label htmlFor="email" className="text-neutral-700 text-sm font-medium pl-1">
           Correo Electrónico
@@ -77,7 +82,7 @@ export default function Form() {
         <input
           id="email"
           type="email"
-          placeholder="admin@compipro.net"
+          placeholder={demo?.email ?? "usuario@compipro.net"}
           className="rounded-full bg-white px-5 py-3 [@media(max-height:620px)]:py-2 text-sm text-ink shadow-sm ring-1 ring-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-accent"
           autoComplete="email"
           value={email}
@@ -91,7 +96,7 @@ export default function Form() {
         <input
           id="password"
           type="password"
-          placeholder="Compipro2025!"
+          placeholder={demo?.password ?? "••••••••"}
           className="rounded-full bg-white px-5 py-3 [@media(max-height:620px)]:py-2 text-sm text-ink shadow-sm ring-1 ring-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-accent"
           autoComplete="current-password"
           value={password}
