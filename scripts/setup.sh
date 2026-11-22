@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Bootstrap remoto: clona el repositorio y ejecuta scripts/run.sh.
 #
-#   curl -fsSL https://raw.githubusercontent.com/ArcGabito/sistema-crm-compipro/master/scripts/setup.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/ArcGabito/sistema-crm-compipro/main/scripts/setup.sh | bash
 #
 # Variables opcionales: REPO_URL, BRANCH, TARGET_DIR
 set -euo pipefail
 
 REPO_URL="${REPO_URL:-https://github.com/ArcGabito/sistema-crm-compipro.git}"
-BRANCH="${BRANCH:-master}"
+BRANCH="${BRANCH:-main}"
 TARGET_DIR="${TARGET_DIR:-sistema-crm-compipro}"
 
 command -v git    >/dev/null 2>&1 || { echo "Falta 'git'."   >&2; exit 1; }
